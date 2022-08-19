@@ -202,7 +202,18 @@ public class Storage {
             throw new StorageException("Problem reading object inventories",e);
         }
     }
-    
+
+    /**
+     * Gets the object inventory for an object id
+     * @param id the object id
+     * @return the object inventory
+     * @throws StorageException  if accessing the inventory fails
+     */
+    public Inventory getObjectInventory(String id) throws StorageException {
+        String path = getObjectPath(id);        
+        return readInventory(Path.of(path,"inventory.json").toFile());
+    }
+
     /**
      * Computes hash 
      * @param id
