@@ -57,7 +57,7 @@ public class Inventory {
                 + ", versions=" + versions + '}';
     }
     
-    private static class Fixity {
+    static class Fixity {
         
         @JsonCreator
         public Fixity() {
@@ -71,7 +71,7 @@ public class Inventory {
         
     }
 
-    private static class Version {
+    static class Version {
         String created;
         String message;
         Map<String,List<String>> state;
@@ -103,7 +103,7 @@ public class Inventory {
         
     }
 
-    private static class User {
+    static class User {
         String name;        
         String address;
 
