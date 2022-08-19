@@ -25,9 +25,8 @@ import org.reflections.Reflections;
  * @author Herbert Lange <lange@ids-mannheim.de>
  */
 public class OcflMini {
-    
-    private final Logger logger = Logger.getGlobal();
-    
+
+    private static final Logger LOG = Logger.getGlobal();
     private Storage ocflStore;
         
     public OcflMini(String root) {
@@ -35,7 +34,7 @@ public class OcflMini {
             // Open or create the ocfl store
             ocflStore = new Storage.Builder(root).build();
         } catch (StorageException | NoSuchAlgorithmException ex) {
-            logger.log(Level.SEVERE, "Exception when initializing storage", ex);
+            LOG.log(Level.SEVERE, "Exception when initializing storage", ex);
         }
     }
     
