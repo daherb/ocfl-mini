@@ -35,7 +35,7 @@ public abstract class Action implements ActionInterface {
                 }
             }
             catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
-                throw new ParseException("Invalid action");
+                throw new ParseException("Invalid action " + actionName);
             }
         }        
     }
