@@ -32,12 +32,15 @@ public class OcflMini {
     public OcflMini(String root) {
         try {
             // Open or create the ocfl store
-            ocflStore = new Storage.Builder(root).build();
+            //ocflStore = new Storage.Builder(root).build();
+            ocflStore = new Storage.Builder(root)
+                    .setStorageExtension(new HashedNtupleStorageExtension(2, 3, new DefaultDigestAlgorithm()))
+                    .build();
         } catch (StorageException | NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "Exception when initializing storage", ex);
         }
     }
-    
+
     public static void main(String[] args) {
         // Get description of all supported actions
         Reflections refl = new Reflections(Action.class.getPackageName());       
