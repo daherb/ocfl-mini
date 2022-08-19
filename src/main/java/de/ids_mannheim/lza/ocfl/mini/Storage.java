@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -224,7 +225,7 @@ public class Storage {
     }
     
     public String getObjectPath(String id) {
-        return storageExtension.getObjectPath(id);
+        return Path.of(storageRoot.getPath(),storageExtension.getObjectPath(id)).toString();
     }
     
 }
