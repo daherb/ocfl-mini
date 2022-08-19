@@ -5,14 +5,23 @@
 package de.ids_mannheim.lza.ocfl.mini;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Class for the action to get an object from the store
  * @author Herbert Lange <lange@ids-mannheim.de>
  */
 public class GetObject extends Action {
+
+    private static final Logger LOG = Logger.getLogger(GetObject.class.getName());
 
     @Override
     public String getActionName() {
@@ -22,11 +31,36 @@ public class GetObject extends Action {
     @Override
     public List<String> getActionParams() {
         return Arrays.asList("object_id", "path");
-    }   
+    }
 
     @Override
-    public void run(Storage storage, List<String> parameters) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void run(Storage storage, List<String> parameters) throws StorageException, ParseException {
+        if (parameters.size() < 2)
+            throw new ParseException("Missing parameter object_id or path for action get");
+        String id = parameters.get(0);
+        Inventory objectInventory = storage.getObjectInventory(id);
+        File destinationPath = new File(parameters.get(1));
+        if (destinationPath.exists())
+            throw new ParseException("Destination path " + destinationPath + " already exists");
+        String objectPath = storage.getObjectPath(id);
+        String head = objectInventory.head;
+        File headPath = Path.of(objectPath, head).toFile();
+        File headInventoryFile = Path.of(headPath.getPath(), "inventory.json").toFile();
+        Inventory headInventory = storage.readInventory(headInventoryFile);
+        Map<String,List<String>> sourceFiles = objectInventory.manifest;
+        Map<String,List<String>> destinationFiles = headInventory.versions.get(head).state;
+        for (String hash : sourceFiles.keySet()) {
+            File fromFile = Path.of(objectPath,sourceFiles.get(hash).get(0)).toFile();
+            File toFile = Path.of(destinationPath.getPath(),destinationFiles.get(hash).get(0)).toFile();
+            try {
+                LOG.log(Level.INFO, "Copy from {0} to {1}",
+                    new String[]{fromFile.toString(), toFile.toString()});
+                FileUtils.copyFile(fromFile, toFile, true);
+            }
+            catch (IOException e) {
+                throw new StorageException("Problem when copying from " + fromFile + " to " + toFile,e);
+            }
+        }
     }
     
 }
