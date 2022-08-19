@@ -4,8 +4,12 @@
  */
 package de.ids_mannheim.lza.ocfl.mini;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Class for the action to purge an object from the store
@@ -25,7 +29,15 @@ public class PurgeObject extends Action {
 
     @Override
     public void run(Storage storage, List<String> parameters) throws ParseException, StorageException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (parameters.size() <1)
+            throw new ParseException("Missing parameter object_id for action info");
+        String id = parameters.get(0);
+        String path = storage.getObjectPath(id);
+        try {
+            FileUtils.deleteDirectory(new File(storage.storageRoot + "/" + path));
+        } catch (IOException ex) {
+            throw new StorageException("Problem when purging object " + id, ex);
+        }
     }
     
 }
