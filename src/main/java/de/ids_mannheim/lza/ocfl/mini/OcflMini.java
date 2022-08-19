@@ -84,12 +84,12 @@ public class OcflMini {
             mini.doAction(cl.getOptionValues("a"));
             
         } catch (ParseException ex) {
+            Logger.getGlobal().log(Level.SEVERE,ex.toString());
             new HelpFormatter().printHelp("ocfl-mini", options);
             System.exit(1);
         }
         catch (StorageException ex) {
-            System.err.println("Exception encountered\n");
-            ex.printStackTrace();
+            Logger.getGlobal().log(Level.SEVERE, "Exception encountered: {0}", ex.toString());
         }
     }
 
