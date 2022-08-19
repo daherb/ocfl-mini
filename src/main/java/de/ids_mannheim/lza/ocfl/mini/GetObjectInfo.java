@@ -26,7 +26,11 @@ public class GetObjectInfo extends Action {
 
     @Override
     public void run(Storage storage, List<String> parameters) throws ParseException, StorageException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (parameters.size() <1)
+            throw new ParseException("Missing parameter object_id for action info");
+        String id = parameters.get(0);
+        Inventory inventory = storage.getObjectInventory(id);
+        System.out.println(inventory);
     }
     
 }
