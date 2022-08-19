@@ -24,7 +24,7 @@ public class PurgeObject extends Action {
     }
 
     @Override
-    public void run(Storage storage, List<String> parameters) {
+    public void run(Storage storage, List<String> parameters) throws ParseException, StorageException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
