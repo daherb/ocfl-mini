@@ -29,20 +29,20 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
  * @author Herbert Lange <lange@ids-mannheim.de>
  */
 public class Storage {
-    
+
     private final Logger LOG = Logger.getLogger(Storage.class.getName());
-    
+
     // default ocfl version
     private static final String OCFL_VERSION_STRING = "1.0";
-    
+
     public static class Builder {
 
         private final String root;
-        
+
         private String version = Storage.OCFL_VERSION_STRING;
         private StorageExtension storageExtension = new DefaultStorageExtension();
         private DigestAlgorithm digestAlgorithm;
-        
+
         /**
          * Builder constructor
          * @param root the storage root
@@ -52,7 +52,7 @@ public class Storage {
             this.digestAlgorithm = new DefaultDigestAlgorithm();        
             this.root = root;  
         }
-        
+
         /**
          * Sets the ocfl version to be used
          * @param version the ocfl version
@@ -62,7 +62,7 @@ public class Storage {
             this.version = version;
             return this;
         }
-        
+
         /**
          * Sets the storage extension to be used
          * @param storageExtension the storage extension
@@ -72,7 +72,7 @@ public class Storage {
             this.storageExtension = storageExtension;
             return this;
         }
-        
+
         /**
          * Sets the digest algorithm to be used
          * @param digestAlgorithm the digest algorithm
@@ -82,7 +82,7 @@ public class Storage {
             this.digestAlgorithm = digestAlgorithm;
             return this;
         }
-        
+
         /**
          * Builds a storage
          * @return the storage
@@ -101,8 +101,9 @@ public class Storage {
     // The current digest algorithm    
     private final DigestAlgorithm digestAlgorithm;
     
+
     public Storage(String root, String version, StorageExtension storageExtension, 
-            DigestAlgorithm digestAlgorithm) throws StorageException {        
+            DigestAlgorithm digestAlgorithm) throws StorageException {
         this.storageRoot = new File(root);
         this.ocflVersion = version;
         this.storageExtension = storageExtension;
@@ -120,7 +121,7 @@ public class Storage {
                     "a directory");
         }
     }
-    
+
     /**
      * Initializes a new storage root
      * @param root the root directory
@@ -152,7 +153,6 @@ public class Storage {
         catch(FileNotFoundException e) {
             throw new StorageException("Problem downloading OCFL spec",e);
         }
-
     }
 
     /**
@@ -170,7 +170,7 @@ public class Storage {
     public String getOcflVersion() {
         return ocflVersion;
     }
-    
+
     /**
      * Lists all top-level object inventory files in the store
      * @return the list of inventory files
@@ -181,12 +181,12 @@ public class Storage {
             new AndFileFilter(Arrays.asList(
                 DirectoryFileFilter.DIRECTORY,
                 new NotFileFilter(
-                    new WildcardFileFilter("v*")                     
+                    new WildcardFileFilter("v*")
                     )
                 ))
             ));
     }
-    
+
     /**
      * Reads an inventory from a file
      * @param inventoryFile the inventory file

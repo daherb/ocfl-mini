@@ -27,8 +27,9 @@ import org.reflections.Reflections;
 public class OcflMini {
 
     private static final Logger LOG = Logger.getGlobal();
+
     private Storage ocflStore;
-        
+
     public OcflMini(String root) {
         try {
             // Open or create the ocfl store
