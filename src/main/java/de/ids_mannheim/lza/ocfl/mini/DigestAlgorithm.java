@@ -6,6 +6,7 @@ package de.ids_mannheim.lza.ocfl.mini;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Interface for hashing both files and strings
@@ -20,6 +21,14 @@ public interface DigestAlgorithm {
      * @throws IOException if hashing the file fails
      */
     String hashFile(File file) throws IOException;
+    
+    /**
+     * Computes hash for an input stream
+     * @param stream the stream to be hashed
+     * @return the hash
+     * @throws IOException if hashing the stream fails
+     */
+    String hashStream(InputStream stream) throws IOException;
     
     /**
      * Computes hash for a string
