@@ -249,5 +249,14 @@ public class Storage {
     public String getObjectPath(String id) {
         return Path.of(storageRoot.getPath(),storageExtension.getObjectPath(id)).toString();
     }
-    
+
+    /**
+     * Checks if object is already in store
+     * @param id the object id
+     * @return true if object already exists, false otherwise
+     */
+    boolean existsObject(String id) throws StorageException {
+        listObjects().stream().anyMatch((o) -> id.equals(o.getId()));
+        return false;
+    }
 }
