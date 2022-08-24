@@ -37,18 +37,25 @@ public class GetObject extends Action {
     public void run(Storage storage, List<String> parameters) throws StorageException, ParseException {
         if (parameters.size() < 2)
             throw new ParseException("Missing parameter object_id or path for action get");
+        // Get id from parameter
         String id = parameters.get(0);
+        // Get inventory for id
         Inventory objectInventory = storage.getObjectInventory(id);
+        // Get and check destination
         File destinationPath = new File(parameters.get(1));
         if (destinationPath.exists())
             throw new ParseException("Destination path " + destinationPath + " already exists");
+        // Get path to the object
         String objectPath = storage.getObjectPath(id);
+        // Access head
         String head = objectInventory.head;
         File headPath = Path.of(objectPath, head).toFile();
         File headInventoryFile = Path.of(headPath.getPath(), "inventory.json").toFile();
         Inventory headInventory = storage.readInventory(headInventoryFile);
+        // Get file lists from inventories
         Map<String,List<String>> sourceFiles = objectInventory.manifest;
         Map<String,List<String>> destinationFiles = headInventory.versions.get(head).state;
+        // Copy all source files to testination
         for (String hash : sourceFiles.keySet()) {
             File fromFile = Path.of(objectPath,sourceFiles.get(hash).get(0)).toFile();
             File toFile = Path.of(destinationPath.getPath(),destinationFiles.get(hash).get(0)).toFile();
