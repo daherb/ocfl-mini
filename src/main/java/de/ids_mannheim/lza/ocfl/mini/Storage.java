@@ -194,6 +194,20 @@ public class Storage {
                 ))
             ));
     }
+    
+    /**
+     * Lists all object ids and head version for all objects in the store
+     * @return the list of inventory files
+     * @throws StorageException if reading inventories fails
+     */
+    public List<ObjectInfo> listObjects() throws StorageException {
+        List<ObjectInfo> objects = new ArrayList<>();        
+        for (File inventoryFile : listObjectInventories()) {
+            Inventory inventory = readInventory(inventoryFile);
+            objects.add(new ObjectInfo(inventory.id,inventory.head));
+        }
+        return objects;
+    }
 
     /**
      * Reads an inventory from a file

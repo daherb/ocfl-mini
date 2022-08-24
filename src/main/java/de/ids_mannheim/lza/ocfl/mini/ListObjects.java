@@ -4,7 +4,6 @@
  */
 package de.ids_mannheim.lza.ocfl.mini;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,11 +27,9 @@ public class ListObjects extends Action {
     }
 
     @Override
-    public void run(Storage storage, List<String> parameters) throws StorageException {        
-        List<File> inventoryFiles = storage.listObjectInventories();
-        for (File inventoryFile : inventoryFiles) {
-            Inventory inventory = storage.readInventory(inventoryFile);
-            System.out.println(String.format("{%s,%s}", inventory.id,inventory.head));
+    public void run(Storage storage, List<String> parameters) throws StorageException {
+        for (ObjectInfo object : storage.listObjects()) {
+            System.out.println(String.format("{%s,%s}", object.getId(),object.getVersion()));
         }
-    }    
+    }
 }
