@@ -19,5 +19,15 @@ public class StorageException extends IOException {
     public StorageException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    @Override
+    public String toString() {
+        String str = super.toString();
+        if (this.getCause() != null) {
+            str += ", cause: " + this.getCause().toString();
+        }
+        return str;
+    }
+    
     
 }
