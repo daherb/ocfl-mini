@@ -123,6 +123,14 @@ public class Storage {
     }
 
     /**
+     * Getter for the digest algorithm
+     * @return the reference to the digest algorithm
+     */
+    public DigestAlgorithm getDigestAlgorithm() {
+        return digestAlgorithm;
+    }
+
+    /**
      * Initializes a new storage root
      * @param root the root directory
      */
