@@ -63,6 +63,12 @@ public class GetObject extends Action {
                 LOG.log(Level.INFO, "Copy from {0} to {1}",
                     new String[]{fromFile.toString(), toFile.toString()});
                 FileUtils.copyFile(fromFile, toFile, true);
+                // Check hash after copy
+                String newHash = storage.getDigestAlgorithm().hashFile(toFile);
+                if (!hash.equals(newHash)) {
+                    LOG.log(Level.SEVERE, "Invalid hash for destination file. "
+                            + "Expected {} but got {}.",new String[]{hash,newHash});
+                }
             }
             catch (IOException e) {
                 throw new StorageException("Problem when copying from " + fromFile + " to " + toFile,e);
