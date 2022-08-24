@@ -6,6 +6,8 @@ package de.ids_mannheim.lza.ocfl.mini;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.cli.ParseException;
 import org.reflections.Reflections;
 
@@ -14,6 +16,9 @@ import org.reflections.Reflections;
  * @author Herbert Lange <lange@ids-mannheim.de>
  */
 public abstract class Action implements ActionInterface {
+
+    private static final Logger LOG = Logger.getLogger(Action.class.getName());
+
     public Action() {};
         
     /**
