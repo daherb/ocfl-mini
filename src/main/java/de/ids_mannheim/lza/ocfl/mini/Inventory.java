@@ -14,14 +14,21 @@ import java.util.Map;
  * @author Herbert Lange <lange@ids-mannheim.de>
  */
 public class Inventory {
-    
+    @JsonProperty("contentDirectory")
     String contentDirectory;
-    String digestAlgorithm; 
-    String head;    
-    String id;    
+    @JsonProperty("digestAlgorithm")
+    String digestAlgorithm;
+    @JsonProperty("head")
+    String head;
+    @JsonProperty("id")
+    String id;
+    @JsonProperty("type")
     String type;   
+    @JsonProperty("fixity")
     Fixity fixity;
+    @JsonProperty("manifest")
     Map<String,List<String>> manifest;
+    @JsonProperty("versions")
     Map<String,Version> versions;
 
     @JsonCreator
@@ -72,10 +79,13 @@ public class Inventory {
     }
 
     static class Version {
+        @JsonProperty("created")
         String created;
+        @JsonProperty("message")
         String message;
+        @JsonProperty("state")
         Map<String,List<String>> state;
-        @JsonProperty
+        @JsonProperty("user")
         User user ;
 
         @JsonCreator
@@ -104,13 +114,15 @@ public class Inventory {
     }
 
     static class User {
-        String name;        
+        @JsonProperty("name")
+        String name;
+        @JsonProperty("address")
         String address;
 
         @JsonCreator
         public User(
-                @JsonProperty("name") String name, 
-                @JsonProperty("address")String address
+                @JsonProperty("name")    String name, 
+                @JsonProperty("address") String address
         ) {
             this.name = name;
             this.address = address;
