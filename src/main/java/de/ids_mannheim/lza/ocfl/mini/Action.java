@@ -12,7 +12,7 @@ import org.apache.commons.cli.ParseException;
 import org.reflections.Reflections;
 
 /**
- *
+ * Abstract class handling actions
  * @author Herbert Lange <lange@ids-mannheim.de>
  */
 public abstract class Action implements ActionInterface {
