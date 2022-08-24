@@ -22,9 +22,9 @@ public class DefaultDigestAlgorithm implements DigestAlgorithm {
     MessageDigest md;
 
     public DefaultDigestAlgorithm() throws NoSuchAlgorithmException {
-        this.md = MessageDigest.getInstance("SHA-512");        
+        this.md = MessageDigest.getInstance("SHA-512");
     }
-    
+
     @Override
     public String hashFile(File file) throws IOException {
         return hashStream(new FileInputStream(file));
