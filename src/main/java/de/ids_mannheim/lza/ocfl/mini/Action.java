@@ -29,7 +29,7 @@ public abstract class Action implements ActionInterface {
         Reflections refl = new Reflections(Action.class.getPackageName());        
         for (Class<? extends Action> action : refl.getSubTypesOf(Action.class)) {
             try {
-            Action actionObject = (Action) action.getDeclaredConstructor().newInstance();
+                Action actionObject = (Action) action.getDeclaredConstructor().newInstance();
                 if (actionObject.getActionName().equalsIgnoreCase(actionName)) {
                     actionObject.run(storage, parameters.subList(1, parameters.size()));
                 }
