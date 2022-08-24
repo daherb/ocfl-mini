@@ -57,26 +57,35 @@ public class GetObject extends Action {
         Map<String,List<String>> destinationFiles = headInventory.versions.get(head).state;
         // Copy all source files to testination
         for (String hash : sourceFiles.keySet()) {
-            File fromFile = Path.of(objectPath,sourceFiles.get(hash).get(0)).toFile();
-            File toFile = Path.of(destinationPath.getPath(),destinationFiles.get(hash).get(0)).toFile();
-            try {
-                LOG.log(Level.INFO, "Copy from {0} to {1}",
-                    new String[]{fromFile.toString(), toFile.toString()});
-                FileUtils.copyFile(fromFile, toFile, true);
-                // Check hash after copy
+            if (sourceFiles.get(hash).size() != destinationFiles.get(hash).size()) {
+                throw new StorageException("Mismatch between source and destination count for copy operation");
+            }
+            for (int i = 0 ; i < sourceFiles.get(hash).size(); i++) {
+                if (!sourceFiles.get(hash).get(i).endsWith(destinationFiles.get(hash).get(i))) {
+                    throw new StorageException("Mismatch between source and destination file name for copy operation");
+                }
+                File fromFile = Path.of(objectPath,sourceFiles.get(hash).get(i)).toFile();
+                File toFile = Path.of(destinationPath.getPath(),destinationFiles.get(hash).get(i)).toFile();
+
                 try {
-                    String newHash = storage.getDigestAlgorithm().hashFile(toFile);
-                    if (!hash.equals(newHash)) {
-                        LOG.log(Level.SEVERE, "Invalid hash for destination file. "
-                                + "Expected {0} but got {1}.",new String[]{hash,newHash});
+                    LOG.log(Level.INFO, "Copy from {0} to {1}",
+                            new String[]{fromFile.toString(), toFile.toString()});
+                    FileUtils.copyFile(fromFile, toFile, true);
+                    // Check hash after copy
+                    try {
+                        String newHash = storage.getDigestAlgorithm().hashFile(toFile);
+                        if (!hash.equals(newHash)) {
+                            throw new StorageException(String.format("Invalid hash for destination file. "
+                                    + "Expected %s but got %s.",hash,newHash));
+                        }
+                    }
+                    catch (IOException e) {
+                        throw new StorageException("Problem when hashing destination file " + toFile,e);
                     }
                 }
                 catch (IOException e) {
-                    throw new StorageException("Problem when hashing destination file " + toFile,e);
+                    throw new StorageException("Problem when copying from " + fromFile + " to " + toFile,e);
                 }
-            }
-            catch (IOException e) {
-                throw new StorageException("Problem when copying from " + fromFile + " to " + toFile,e);
             }
         }
     }
