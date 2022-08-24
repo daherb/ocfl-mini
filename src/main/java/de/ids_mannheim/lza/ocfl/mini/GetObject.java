@@ -64,10 +64,15 @@ public class GetObject extends Action {
                     new String[]{fromFile.toString(), toFile.toString()});
                 FileUtils.copyFile(fromFile, toFile, true);
                 // Check hash after copy
-                String newHash = storage.getDigestAlgorithm().hashFile(toFile);
-                if (!hash.equals(newHash)) {
-                    LOG.log(Level.SEVERE, "Invalid hash for destination file. "
-                            + "Expected {} but got {}.",new String[]{hash,newHash});
+                try {
+                    String newHash = storage.getDigestAlgorithm().hashFile(toFile);
+                    if (!hash.equals(newHash)) {
+                        LOG.log(Level.SEVERE, "Invalid hash for destination file. "
+                                + "Expected {0} but got {1}.",new String[]{hash,newHash});
+                    }
+                }
+                catch (IOException e) {
+                    throw new StorageException("Problem when hashing destination file " + toFile,e);
                 }
             }
             catch (IOException e) {
