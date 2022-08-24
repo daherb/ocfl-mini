@@ -8,6 +8,7 @@ package de.ids_mannheim.lza.ocfl.mini;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,11 +27,16 @@ public class DefaultDigestAlgorithm implements DigestAlgorithm {
     
     @Override
     public String hashFile(File file) throws IOException {
+        return hashStream(new FileInputStream(file));
+    }
+
+    @Override
+    public String hashStream(InputStream stream) throws IOException {
         md.reset();
-        DigestInputStream dis = new DigestInputStream(new FileInputStream(file), md);
+        DigestInputStream dis = new DigestInputStream(stream, md);
         dis.on(true);
         dis.readAllBytes();
-        return bytesToHexString(dis.getMessageDigest().digest());       
+        return bytesToHexString(dis.getMessageDigest().digest());
     }
 
     @Override
