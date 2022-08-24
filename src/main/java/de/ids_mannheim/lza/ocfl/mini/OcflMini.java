@@ -80,7 +80,7 @@ public class OcflMini {
                 .required()
                 .hasArgs()
                 .desc(description.toString())
-                .longOpt("ocfl-root")
+                .longOpt("action")
                 .build());
         try {
             CommandLine cl = DefaultParser.builder().build().parse(options, args);
