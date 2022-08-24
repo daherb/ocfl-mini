@@ -52,5 +52,9 @@ public class DefaultDigestAlgorithm implements DigestAlgorithm {
         }
         return sb.toString();
     }
-    
+
+    @Override
+    public String toString() {
+        return "sha512";
+    }
 }
