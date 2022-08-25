@@ -261,7 +261,6 @@ public class Storage {
      * @return true if object already exists, false otherwise
      */
     public boolean existsObject(String id) throws StorageException {
-        LOG.log(Level.INFO,id);
         return listObjects().stream().anyMatch((o) -> id.equals(o.getId()));
     }
     
