@@ -255,8 +255,8 @@ public class Storage {
      * @param id the object id
      * @return true if object already exists, false otherwise
      */
-    boolean existsObject(String id) throws StorageException {
-        listObjects().stream().anyMatch((o) -> id.equals(o.getId()));
-        return false;
+    public boolean existsObject(String id) throws StorageException {
+        return listObjects().stream().anyMatch((o) -> id.equals(o.getId()));
+    }
     }
 }
