@@ -245,7 +245,12 @@ public class Storage {
     public String hashId(String id) {
         return digestAlgorithm.hashString(id);
     }
-    
+
+    /**
+     * Returns the file system path for an object
+     * @param id the object id
+     * @return the path containing the ocfl object
+     */
     public String getObjectPath(String id) {
         return Path.of(storageRoot.getPath(),storageExtension.getObjectPath(id)).toString();
     }
@@ -256,7 +261,16 @@ public class Storage {
      * @return true if object already exists, false otherwise
      */
     public boolean existsObject(String id) throws StorageException {
+        LOG.log(Level.INFO,id);
         return listObjects().stream().anyMatch((o) -> id.equals(o.getId()));
     }
+    
+    /**
+     * Computes the next object version
+     * @param version the current version
+     * @return the next version
+     */
+    public String nextVersion(String version) {
+        return "v" + String.valueOf(Integer.parseInt(version.replace("v", ""))+1);
     }
 }
