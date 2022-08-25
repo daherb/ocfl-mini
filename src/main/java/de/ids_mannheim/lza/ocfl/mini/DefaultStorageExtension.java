@@ -4,6 +4,9 @@
  */
 package de.ids_mannheim.lza.ocfl.mini;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Class for default storage extension using object id as path, potentially 
  * splitting of a prefix which is basically equivalent to
@@ -38,5 +41,16 @@ public class DefaultStorageExtension implements StorageExtension {
             return splitted[splitted.length-1];
         }
     }
+
+    @Override
+    public URL getUrl() throws MalformedURLException {
+        return new URL("https://github.com/OCFL/extensions/blob/main/docs/0006-flat-omit-prefix-storage-layout.md");
+    }
+
+    @Override
+    public String getName() {
+        return "0006-flat-omit-prefix-storage-layout";
+    }
+    
     
 }

@@ -15,7 +15,9 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AndFileFilter;
@@ -42,6 +44,7 @@ public class Storage {
         private String version = Storage.OCFL_VERSION_STRING;
         private StorageExtension storageExtension = new DefaultStorageExtension();
         private DigestAlgorithm digestAlgorithm;
+        private final Set<Extension> extensions = new HashSet();
 
         /**
          * Builder constructor
@@ -84,12 +87,22 @@ public class Storage {
         }
 
         /**
+         * Adds an additional extension
+         * @param extension the extension
+         * @return the builder
+         */
+        public Storage.Builder addExtension(Extension extension) {
+            this.extensions.add(extension);
+            return this;
+        }
+
+        /**
          * Builds a storage
          * @return the storage
          * @throws StorageException if initializing the storage fails
          */
         public Storage build() throws StorageException {
-            return new Storage(root, version, storageExtension, digestAlgorithm);
+            return new Storage(root, version, storageExtension, digestAlgorithm, extensions);
         }
     }
     // File object to keep track of the store
@@ -100,14 +113,17 @@ public class Storage {
     private final StorageExtension storageExtension;
     // The current digest algorithm    
     private final DigestAlgorithm digestAlgorithm;
-    
+    // The set of all loaded extensions
+    private final Set<Extension> extensions = new HashSet<>();
 
     public Storage(String root, String version, StorageExtension storageExtension, 
-            DigestAlgorithm digestAlgorithm) throws StorageException {
+            DigestAlgorithm digestAlgorithm, Set<Extension> extensions) throws StorageException {
         this.storageRoot = new File(root);
         this.ocflVersion = version;
         this.storageExtension = storageExtension;
         this.digestAlgorithm = digestAlgorithm;
+        this.extensions.add(storageExtension);
+        this.extensions.addAll(extensions);
         
         if (!storageRoot.exists()) {
             try {
@@ -156,10 +172,22 @@ public class Storage {
             try (FileOutputStream fos = new FileOutputStream(storageRoot + "/" 
                     + dvalue + ".html")) {
                 url.openStream().transferTo(fos);                
-            }            
+            }
         }
         catch(FileNotFoundException e) {
             throw new StorageException("Problem downloading OCFL spec",e);
+        }
+        try {
+        for (Extension e : extensions) {
+            try (FileOutputStream fos = new FileOutputStream(
+                    Path.of(storageRoot.getPath(), e.getName() + ".md").toString())
+            ) {
+                e.getUrl().openStream().transferTo(fos);
+            }
+        }
+        }
+        catch (IOException e) {
+            throw new StorageException("Exception when downloading extension specs", e);
         }
     }
 

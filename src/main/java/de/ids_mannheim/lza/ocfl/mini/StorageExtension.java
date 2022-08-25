@@ -8,12 +8,13 @@ package de.ids_mannheim.lza.ocfl.mini;
  * Interface defining basic storage properties
  * @author Herbert Lange <lange@ids-mannheim.de>
  */
-public interface StorageExtension {
+public interface StorageExtension extends Extension {
     
     /**
      * Returns a path for the object id
      * @param id the object id
      * @return the object path
      */
-    String getObjectPath(String id);
+    abstract String getObjectPath(String id);
+    
 }

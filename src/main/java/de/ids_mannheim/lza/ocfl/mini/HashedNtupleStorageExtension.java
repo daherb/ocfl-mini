@@ -4,6 +4,11 @@
  */
 package de.ids_mannheim.lza.ocfl.mini;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Class representing the Hashed N-tuple Storage Layout
  * https://github.com/OCFL/extensions/blob/main/docs/0004-hashed-n-tuple-storage-layout.md
@@ -42,5 +47,16 @@ public class HashedNtupleStorageExtension implements StorageExtension {
         path.append(hash);
         return path.toString();
     }
+
+    @Override
+    public URL getUrl() throws MalformedURLException {
+        return new URL("https://github.com/OCFL/extensions/blob/main/docs/0004-hashed-n-tuple-storage-layout.md");
+    }
+
+    @Override
+    public String getName() {
+        return "0004-hashed-n-tuple-storage-layout";
+    }
+    
     
 }
