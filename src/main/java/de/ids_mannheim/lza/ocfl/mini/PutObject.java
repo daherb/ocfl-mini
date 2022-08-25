@@ -56,28 +56,32 @@ public class PutObject extends Action {
 
     @Override
     public List<String> getActionParams() {
-        return Arrays.asList("path","object_id");
+        return Arrays.asList("path","object_id","name","mail_address","message");
     }
 
     @Override
     public void run(Storage storage, List<String> parameters) throws ParseException, StorageException {
-        if (parameters.size() < 2)
-            throw new ParseException("Missing parameter path or object_id for action put");
+        if (parameters.size() < 5)
+            throw new ParseException("Missing parameter for action put");
         // Get path from parameter
         File sourcePath = Path.of(parameters.get(0)).toFile();
         // Get and check destination
-        String id = parameters.get(1);        
+        String id = parameters.get(1);
+        String name = parameters.get(2);
+        String address = parameters.get(3);
+        String message = parameters.get(4);
         // Check if object already in store
         if (storage.existsObject(id)) {
-            updateObject(storage, id,sourcePath);
+            updateObject(storage, id,sourcePath, name, address, message);
         }
         else {
-            createObject(storage, id,sourcePath);
+            createObject(storage, id,sourcePath, name, address, message);
            
         }
     }
 
-    private void createObject(Storage storage, String id, File path) throws StorageException {
+    private void createObject(Storage storage, String id, File path
+            , String name, String address, String message) throws StorageException {
         // Create temporary object directory
         File tmpFolder = createTempDir();
         // Create temporary version and content directory
@@ -103,9 +107,9 @@ public class PutObject extends Action {
                 //LocalDateTime.now().format( ) // created
                 //new SimpleDateFormat("yyyy-MM-dd'T'h:m:ssZZZZZ").format(Date.from(Instant.now())) // created
                 LocalDateTime.now(ZoneId.of("Z")).atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
-                , "Initial version of object " + id //message
+                , message //message
                 , state // state
-                , new Inventory.User("","mailto:") // user
+                , new Inventory.User(name,"mailto:" + address) // user
         );
         HashMap<String,Inventory.Version> versions = new HashMap<>();
         versions.put("v1", newVersion);
@@ -188,9 +192,9 @@ public class PutObject extends Action {
                 LocalDateTime.now(ZoneId.of("Z"))
                         .atOffset(ZoneOffset.UTC)
                         .format(DateTimeFormatter.ISO_ZONED_DATE_TIME) // created
-                , "Updated version of object " + id //message
+                , message //message
                 , state // state
-                , new Inventory.User("","mailto:") // user
+                , new Inventory.User(name,"mailto:" + address) // user
         );
         inventory.versions.put(nextVersion,newVersion);
         // Write inventories
