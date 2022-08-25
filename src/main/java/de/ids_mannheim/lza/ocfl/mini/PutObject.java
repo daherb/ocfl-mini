@@ -91,8 +91,8 @@ public class PutObject extends Action {
             throw new StorageException("Problem when creating temporary content directory");
         // Create a file list
         List<FileInfo> fileInfos = listFiles(storage, path);
-        // Copy files into content directory
-        copyToContent(storage, fileInfos, contentFolder);
+        // Copy files into content directory, with no known duplicates
+        copyToContent(storage, fileInfos, contentFolder, new ArrayList<>());
         // Create inventories
         HashMap<String,List<String>> state = new HashMap<>();
         HashMap<String,List<String>> manifest = new HashMap<>();
@@ -163,7 +163,8 @@ public class PutObject extends Action {
      * @param path the path containing the data
      * @throws StorageException if there are problems during the update procedure
      */
-    private void updateObject(Storage storage, String id, File path) throws StorageException {
+    private void updateObject(Storage storage, String id, File path, 
+            String name, String address, String message)throws StorageException {
         Inventory inventory = storage.getObjectInventory(id);
         String nextVersion =  storage.nextVersion(inventory.head);
         // Create temporary object directory
@@ -175,17 +176,22 @@ public class PutObject extends Action {
             throw new StorageException("Problem when creating temporary content directory");
         // Create a file list
         List<FileInfo> fileInfos = listFiles(storage, path);
-        // Copy files into content directory
-        copyToContent(storage, fileInfos, contentFolder);
+        // Keep track of duplicates
+        List<String> dumplicates = new ArrayList<>();
         // Update inventory
         HashMap<String,List<String>> state = new HashMap<>();
         for (FileInfo info : fileInfos) {
-            state.putIfAbsent(info.hash, new ArrayList<>());
-            inventory.manifest.putIfAbsent(info.hash, new ArrayList<>());
-            state.get(info.hash).add(info.relativePath);
-            inventory.manifest.get(info.hash)
+            // Remeber duplicate file if already present in manifest
+            if (inventory.manifest.containsKey(info.hash)) 
+                dumplicates.add(info.file.toString());
+            else {
+                inventory.manifest.putIfAbsent(info.hash, new ArrayList<>());
+                inventory.manifest.get(info.hash)
                     .add(Path.of(nextVersion, "content",info.relativePath)
                             .toString());
+            }
+            state.putIfAbsent(info.hash, new ArrayList<>());
+            state.get(info.hash).add(info.relativePath);           
         }
         inventory.head = nextVersion;
         Inventory.Version newVersion = new Inventory.Version(
@@ -197,6 +203,8 @@ public class PutObject extends Action {
                 , new Inventory.User(name,"mailto:" + address) // user
         );
         inventory.versions.put(nextVersion,newVersion);
+        // Copy files into content directory
+        copyToContent(storage, fileInfos, contentFolder, dumplicates);
         // Write inventories
         File versionInventoryFile = Path.of(versionFolder.getPath(),"inventory.json").toFile();
         File objectInventoryFile = Path.of(tmpFolder.getPath(),"inventory.json").toFile();
@@ -289,22 +297,25 @@ public class PutObject extends Action {
      * @param contentFolder the content folder where the files should be stored
      * @throws StorageException if copying fails
      */
-    private void copyToContent(Storage storage, List<FileInfo> fileInfos, File contentFolder) 
+    private void copyToContent(Storage storage, List<FileInfo> fileInfos, 
+            File contentFolder, List<String> duplicates)
             throws StorageException {
         try {
             for (FileInfo fileInfo : fileInfos) {
-                File toFile = Path.of(contentFolder.toString(),
-                        fileInfo.relativePath).toFile();
-                FileUtils.copyFile(fileInfo.file,
-                        toFile,
-                        true);
-                // Compare three hashes: the initial file hash, the resulting file hash
-                // and a backup hash based on the file handle
-                String toHash = storage.getDigestAlgorithm().hashFile(toFile);
-                String streamHash = storage.getDigestAlgorithm()
-                        .hashStream(fileInfo.handle);
-                if (!fileInfo.hash.equals(streamHash) || !fileInfo.hash.equals(toHash)) {
-                    throw new StorageException("Hash mismatch after copying files to temporary content directory");
+                if (!duplicates.contains(fileInfo.file.toString())) {
+                    File toFile = Path.of(contentFolder.toString(),
+                            fileInfo.relativePath).toFile();
+                    FileUtils.copyFile(fileInfo.file,
+                            toFile,
+                            true);
+                    // Compare three hashes: the initial file hash, the resulting file hash
+                    // and a backup hash based on the file handle
+                    String toHash = storage.getDigestAlgorithm().hashFile(toFile);
+                    String streamHash = storage.getDigestAlgorithm()
+                            .hashStream(fileInfo.handle);
+                    if (!fileInfo.hash.equals(streamHash) || !fileInfo.hash.equals(toHash)) {
+                        throw new StorageException("Hash mismatch after copying files to temporary content directory");
+                    }
                 }
             }
         }
